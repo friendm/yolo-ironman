@@ -67,11 +67,13 @@ ruff check . && black --check .
 If Playwright's bundled Chromium isn't installed, point it at another build with
 `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chrome`.
 
-## Deploy (Render)
+## Deploy (Railway)
 
-`render.yaml` defines a web service (gunicorn + WhiteNoise), a Django-Q2 worker, and managed Postgres.
-`scripts/release.sh` runs migrations, creates the cache table, and sets up schedules before each deploy.
-Fill in the secrets listed in `.env.example`. Set `SITE_URL` to the public URL; it is used in every SMS and
+`.railway/railway.ts` defines the Railway project with Railway's Infrastructure as Code: managed Postgres, a
+private storage bucket for documents, a `web` service (gunicorn + WhiteNoise), and a Django-Q2 `worker`.
+Before each web deploy, `scripts/release.sh` runs migrations, creates the cache table, and sets up job
+schedules; Railway then waits for `/healthz`. Step-by-step setup, including the shared variables to add, is in
+[`.railway/README.md`](.railway/README.md). Set `SITE_URL` to the public URL; it is used in every SMS and
 email link.
 
 ## Layout

@@ -54,11 +54,21 @@ SECRET_KEY = env("DJANGO_SECRET_KEY") or ("dev-insecure-key" if DEBUG else None)
 if not SECRET_KEY:
     raise RuntimeError("DJANGO_SECRET_KEY must be set when DJANGO_DEBUG is off.")
 
-ALLOWED_HOSTS = [h.strip() for h in env("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if h]
-CSRF_TRUSTED_ORIGINS = [o.strip() for o in env("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if o]
+ALLOWED_HOSTS = [h.strip() for h in env("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if h.strip()]
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in env("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()]
+
+# Railway: trust the generated public domain, and accept Railway's healthcheck requests.
+RAILWAY_PUBLIC_DOMAIN = env("RAILWAY_PUBLIC_DOMAIN")
+if RAILWAY_PUBLIC_DOMAIN:
+    ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RAILWAY_PUBLIC_DOMAIN}")
+if env("RAILWAY_ENVIRONMENT_NAME") or env("RAILWAY_ENVIRONMENT"):
+    ALLOWED_HOSTS.append("healthcheck.railway.app")
 
 # Absolute base URL used in SMS and email links (no trailing slash).
-SITE_URL = env("SITE_URL", "http://localhost:8000").rstrip("/")
+SITE_URL = (
+    env("SITE_URL") or (f"https://{RAILWAY_PUBLIC_DOMAIN}" if RAILWAY_PUBLIC_DOMAIN else "http://localhost:8000")
+).rstrip("/")
 SITE_NAME = env("SITE_NAME", "COI Network")
 
 INSTALLED_APPS = [
@@ -158,6 +168,8 @@ if USE_S3:
             "querystring_auth": True,
             "querystring_expire": SIGNED_URL_SECONDS,
             "file_overwrite": False,
+            # Railway buckets use virtual-hosted style URLs; leave unset elsewhere to let boto decide.
+            "addressing_style": env("S3_ADDRESSING_STYLE") or None,
         },
     }
 else:
@@ -230,6 +242,7 @@ SECURE_REFERRER_POLICY = "same-origin"
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", True)
+    SECURE_REDIRECT_EXEMPT = [r"^healthz$"]  # platform healthchecks call over plain HTTP
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = 60 * 60 * 24 * 30

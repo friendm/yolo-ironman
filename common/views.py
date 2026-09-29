@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
 
 
 def role_required(*roles):
@@ -17,3 +18,8 @@ def role_required(*roles):
         return wrapped
 
     return decorator
+
+
+def healthz(request):
+    """Liveness check for the hosting platform. No database access, no redirects."""
+    return HttpResponse("ok", content_type="text/plain")
