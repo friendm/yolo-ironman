@@ -1,0 +1,16 @@
+{% extends "app.html" %}
+{% block title %}Business details{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{% if vendor %}Business details{% else %}Tell us about your business{% endif %}</h1>
+    <p>{% if vendor %}Keep this current so organizers and your agent get the right details.{% else %}Step 1 of 2. Takes about a minute.{% endif %}</p>
+  </div>
+</div>
+<form class="card" method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
+  {% if photo %}<img class="doc-thumb" src="{{ photo }}" alt="Current photo">{% endif %}
+  {{ form }}
+  <button class="btn btn-primary" type="submit">{% if vendor %}Save{% else %}Continue to documents{% endif %}</button>
+</form>
+{% if vendor %}<p class="muted"><a href="{% url 'vendors:delete_account' %}">Delete my account</a></p>{% endif %}
+{% endblock %}

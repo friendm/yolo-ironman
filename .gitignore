@@ -33,3 +33,12 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# Local
+.env
+.venv/
+private_media/
+staticfiles/
+.pytest_cache/
+.ruff_cache/
+test-results/

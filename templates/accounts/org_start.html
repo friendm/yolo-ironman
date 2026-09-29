@@ -1,0 +1,24 @@
+{% extends "public.html" %}
+{% block title %}Organizer sign up{% endblock %}
+{% block content %}
+<div class="narrow">
+  <div class="card">
+    <span class="card-label">Organizers</span>
+    <h1>Sign in with email</h1>
+    <p class="muted">We'll email you a one-time sign-in link.</p>
+    <form method="post" action="{% url 'accounts:email_link' %}" novalidate>{% csrf_token %}
+      {{ email_form }}
+      <button class="btn btn-primary btn-block" type="submit">Email me a link</button>
+    </form>
+  </div>
+  <div class="card">
+    <span class="card-label">Or</span>
+    <h2>Use your phone</h2>
+    <form method="post" action="{% url 'accounts:login' %}" novalidate>{% csrf_token %}
+      {{ phone_form }}
+      <button class="btn btn-secondary btn-block" type="submit">Text me a code</button>
+    </form>
+    <p class="muted">Already set a password? <a href="{% url 'accounts:email_login' %}">Log in with email and password</a>.</p>
+  </div>
+</div>
+{% endblock %}

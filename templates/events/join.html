@@ -1,0 +1,9 @@
+{% extends "app.html" %}
+{% block title %}Join an event{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Join an event</h1><p>Enter the invite code the organizer gave you.</p></div></div>
+<form class="card" method="post" novalidate>{% csrf_token %}
+  {{ form }}
+  <button class="btn btn-primary btn-block" type="submit">Find event</button>
+</form>
+{% endblock %}

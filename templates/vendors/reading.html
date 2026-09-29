@@ -1,0 +1,11 @@
+{% extends "app.html" %}
+{% block head %}<meta http-equiv="refresh" content="3">{% endblock %}
+{% block title %}Reading your document{% endblock %}
+{% block content %}
+<div class="card empty" role="status">
+  <span class="card-label">{{ document.document_type.label }}</span>
+  <h1>Reading your document...</h1>
+  <p>This usually takes a few seconds. This page refreshes on its own.</p>
+  <a class="btn btn-secondary" href="{% url 'vendors:confirm' document.id %}">Refresh now</a>
+</div>
+{% endblock %}

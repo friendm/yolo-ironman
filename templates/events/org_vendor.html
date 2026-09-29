@@ -1,0 +1,47 @@
+{% extends "app.html" %}{% load ui %}
+{% block title %}{{ vendor.business_name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ vendor.business_name }} {% pill link.computed_status %}</h1>
+    <p>{{ vendor.get_vendor_type_display }}{% if vendor.service_area %} · {{ vendor.service_area }}{% endif %} · <a href="{% url 'events:org_event' event.id %}">{{ event.name }}</a></p>
+  </div>
+</div>
+{% if link.status_reasons %}
+<div class="card"><span class="card-label">What's outstanding</span><ul class="reasons">{% for r in link.status_reasons %}<li>{{ r }}</li>{% endfor %}</ul></div>
+{% endif %}
+<div class="card card-flush">
+  <div class="card-head"><span class="card-label">Documents for this event</span></div>
+  <div class="table-wrap">
+  <table class="stack-sm">
+    <thead><tr><th>Document</th><th>Status</th><th>Verified</th><th>Method</th><th>Expires</th><th><span class="sr-only">Actions</span></th></tr></thead>
+    <tbody>
+    {% for row in rows %}
+      <tr>
+        <td>{{ row.type.label }}</td>
+        {% if row.doc %}
+          <td>{% pill row.doc.status %}</td>
+          <td>{{ row.doc.verified_at|date:"M j, Y"|default:"—" }}</td>
+          <td>{{ row.doc.get_verification_method_display|default:"—" }}</td>
+          <td>{{ row.doc.expiration_date|date:"M j, Y"|default:"—" }}</td>
+          <td class="num"><a href="{% url 'documents:view' row.doc.id %}" target="_blank" rel="noopener">View</a> · <a href="{% url 'documents:view' row.doc.id %}?download=1">Download</a></td>
+        {% else %}
+          <td>{% pill "missing" %}</td><td>—</td><td>—</td><td>—</td><td></td>
+        {% endif %}
+      </tr>
+      {% if row.doc.coi %}
+      <tr><td colspan="6"><dl class="kv">
+        <dt>Insurer</dt><dd>{{ row.doc.coi.insurer_name|default:"—" }}{% if row.doc.coi.naic_number %} (NAIC {{ row.doc.coi.naic_number }}){% endif %}</dd>
+        <dt>GL per occurrence</dt><dd>{{ row.doc.coi.gl_per_occurrence|dollars }}</dd>
+        <dt>GL aggregate</dt><dd>{{ row.doc.coi.gl_aggregate|dollars }}</dd>
+        <dt>Auto liability</dt><dd>{{ row.doc.coi.auto_liability|dollars }}</dd>
+        <dt>Additional insureds</dt><dd>{% for n in row.doc.coi.additional_insureds %}{{ n }}{% if not forloop.last %}<br>{% endif %}{% empty %}—{% endfor %}</dd>
+      </dl></td></tr>
+      {% endif %}
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+<p class="muted">Every document view and download is logged. {% disclaimer %}</p>
+{% endblock %}

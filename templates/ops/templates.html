@@ -1,0 +1,19 @@
+{% extends "app.html" %}{% load ui %}
+{% block title %}Requirement templates{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Requirement templates</h1><p>The default template pre-fills every new event's requirements.</p></div></div>
+<div class="grid-2">
+  <div class="card card-flush">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Name</th><th>GL minimums</th><th>Default</th></tr></thead>
+      <tbody>{% for t in templates %}<tr class="row-link"><td><a href="{% url 'ops:template_edit' t.id %}">{{ t.name }}</a></td><td>{{ t.min_gl_per_occurrence|dollars }} / {{ t.min_gl_aggregate|dollars }}</td><td>{{ t.is_default|yesno:"Yes,—" }}</td></tr>{% empty %}<tr><td colspan="3" class="empty">No templates. The built-in defaults apply.</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </div>
+  <form class="card" method="post" novalidate>{% csrf_token %}
+    <span class="card-label">{% if instance %}Edit {{ instance.name }}{% else %}Add a template{% endif %}</span>
+    {{ form }}
+    <button class="btn btn-primary" type="submit">Save</button>
+    {% if instance %}<a class="btn btn-secondary" href="{% url 'ops:templates' %}">New</a>{% endif %}
+  </form>
+</div>
+{% endblock %}

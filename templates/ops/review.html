@@ -1,0 +1,60 @@
+{% extends "app.html" %}{% load ui %}
+{% block title %}Review {{ document.document_type.label }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <span class="card-label">{{ document.get_source_display }}{% if document.event %} · for {{ document.event.name }}{% endif %}</span>
+    <h1>{{ document.vendor.business_name }} · {{ document.document_type.label }} {% pill document.status %}</h1>
+    <p>Submitted {{ document.submitted_at|date:"M j, Y g:i a"|default:"—" }} · reading {{ document.get_extraction_status_display|lower }}{% if document.extraction_model %} ({{ document.extraction_model }}, prompt {{ document.extraction_prompt_version }}){% endif %}</p>
+  </div>
+  <a class="btn btn-secondary" href="{% url 'ops:vendor_detail' document.vendor.id %}">Vendor</a>
+</div>
+{% if flags %}<div class="notice notice-danger"><strong>Check before verifying:</strong><ul class="reasons">{% for f in flags %}<li>{{ f }}</li>{% endfor %}</ul></div>{% endif %}
+<div class="review">
+  <div class="review-file">
+    {% if document.is_image %}<img src="{{ file_url }}" alt="Uploaded {{ document.document_type.label }}">
+    {% else %}<iframe src="{{ file_url }}" title="Uploaded {{ document.document_type.label }}"></iframe>{% endif %}
+    <p class="muted"><a href="{% url 'documents:view' document.id %}" target="_blank" rel="noopener">Open in a new tab</a> (link expires in 10 minutes)</p>
+  </div>
+  <div>
+    <div class="card card-flush">
+      <div class="card-head"><span class="card-label">AI read vs. vendor confirmed</span></div>
+      <div class="table-wrap">
+      <table class="diff">
+        <thead><tr><th>Field</th><th>AI read</th><th>Vendor</th></tr></thead>
+        <tbody>
+        {% for row in rows %}
+          <tr><td>{{ row.label }}</td><td class="{% if row.low %}low{% endif %}">{{ row.extracted|default_if_none:"—" }}</td><td class="{% if row.differs %}differs{% endif %}">{{ row.confirmed|default_if_none:"—" }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+      <p class="muted card-head">Yellow cells differ from the AI read. A left bar marks low AI confidence.</p>
+    </div>
+    <form method="post" novalidate>{% csrf_token %}
+      <div class="card">
+        <span class="card-label">Confirmed fields (edit if needed)</span>
+        {{ fields_form }}
+      </div>
+      <div class="card">
+        <span class="card-label">Decision</span>
+        {{ verify_form }}
+        <button class="btn btn-primary" type="submit">Save decision</button>
+      </div>
+    </form>
+    <div class="card">
+      <span class="card-label">Agent verification</span>
+      {% if document.vendor.agent_email %}
+        <p class="muted">Email {{ document.vendor.agent_name|default:"the agent" }} ({{ document.vendor.agent_email }}) to confirm the policy is active. Log the reply in reviewer notes.</p>
+        <form method="post" action="{% url 'ops:agent_verify' document.id %}">{% csrf_token %}<button class="btn btn-secondary" type="submit">Email agent to confirm</button></form>
+      {% else %}<p class="muted">No agent email on file.{% if document.vendor.agent_phone %} Agent phone: {{ document.vendor.agent_phone }}.{% endif %}</p>{% endif %}
+    </div>
+    {% if history %}
+    <div class="card">
+      <span class="card-label">Earlier versions</span>
+      <ul>{% for h in history %}<li><a href="{% url 'ops:review' h.id %}">{{ h.created_at|date:"M j, Y" }}</a> · {{ h.get_status_display }}</li>{% endfor %}</ul>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

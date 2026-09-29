@@ -1,0 +1,19 @@
+{% extends "app.html" %}
+{% block title %}Document types{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Document types</h1><p>The configurable list vendors upload and events can require.</p></div></div>
+<div class="grid-2">
+  <div class="card card-flush">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Label</th><th>Key</th><th>Expires</th></tr></thead>
+      <tbody>{% for t in types %}<tr class="row-link"><td><a href="{% url 'ops:document_type_edit' t.id %}">{{ t.label }}</a></td><td>{{ t.key }}</td><td>{{ t.has_expiration|yesno:"Yes,No" }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </div>
+  <form class="card" method="post" novalidate>{% csrf_token %}
+    <span class="card-label">{% if instance %}Edit {{ instance.label }}{% else %}Add a document type{% endif %}</span>
+    {{ form }}
+    <button class="btn btn-primary" type="submit">Save</button>
+    {% if instance %}<a class="btn btn-secondary" href="{% url 'ops:document_types' %}">New</a>{% endif %}
+  </form>
+</div>
+{% endblock %}

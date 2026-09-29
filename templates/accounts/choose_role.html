@@ -1,0 +1,12 @@
+{% extends "public.html" %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+<div class="narrow card">
+  <span class="card-label">Welcome</span>
+  <h1>How will you use {{ SITE_NAME }}?</h1>
+  <form method="post" novalidate>{% csrf_token %}
+    {{ form }}
+    <button class="btn btn-primary btn-block" type="submit">Continue</button>
+  </form>
+</div>
+{% endblock %}

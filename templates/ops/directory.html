@@ -1,0 +1,31 @@
+{% extends "app.html" %}
+{% block title %}Directory{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Directory</h1><p>Search vendors, organizations, and events.</p></div></div>
+<form class="search card" method="get" role="search">
+  <label class="sr-only" for="id_q">Search</label>
+  <input id="id_q" type="search" name="q" value="{{ form.q.value|default:'' }}" placeholder="Name, phone, email, or invite code">
+  <button class="btn btn-secondary" type="submit">Search</button>
+</form>
+<div class="card card-flush">
+  <div class="card-head"><span class="card-label">Vendors</span></div>
+  <div class="table-wrap"><table class="stack-sm">
+    <thead><tr><th>Business</th><th>Type</th><th>Phone</th><th>Joined</th></tr></thead>
+    <tbody>{% for v in vendors %}<tr class="row-link"><td><a href="{% url 'ops:vendor_detail' v.id %}">{{ v.business_name }}</a>{% if v.deleted_at %} <span class="muted">(deleted)</span>{% endif %}</td><td>{{ v.get_vendor_type_display }}</td><td>{{ v.owner_user.phone|default:"—" }}</td><td>{{ v.created_at|date:"M j, Y" }}</td></tr>{% empty %}<tr><td colspan="4" class="empty">No vendors.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</div>
+<div class="card card-flush">
+  <div class="card-head"><span class="card-label">Organizations</span></div>
+  <div class="table-wrap"><table class="stack-sm">
+    <thead><tr><th>Name</th><th>Type</th><th>Owner</th><th>Plan</th></tr></thead>
+    <tbody>{% for o in orgs %}<tr><td>{{ o.name }}</td><td>{{ o.get_org_type_display }}</td><td>{{ o.owner_user.email|default:o.owner_user.phone }}</td><td>{{ o.plan }}</td></tr>{% empty %}<tr><td colspan="4" class="empty">No organizations.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</div>
+<div class="card card-flush">
+  <div class="card-head"><span class="card-label">Events</span></div>
+  <div class="table-wrap"><table class="stack-sm">
+    <thead><tr><th>Event</th><th>Organization</th><th>Dates</th><th>Code</th></tr></thead>
+    <tbody>{% for e in events %}<tr><td>{{ e.name }}</td><td>{{ e.organization.name }}</td><td>{% if e.is_standing %}Standing{% else %}{{ e.start_date|date:"M j, Y" }}{% endif %}</td><td>{{ e.invite_code }}</td></tr>{% empty %}<tr><td colspan="4" class="empty">No events.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</div>
+{% endblock %}

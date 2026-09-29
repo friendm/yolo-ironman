@@ -1,0 +1,34 @@
+{% extends "app.html" %}
+{% block title %}Metrics{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Pilot metrics</h1><p>Computed from the database. No third-party analytics.</p></div></div>
+<div class="card card-flush">
+  <div class="table-wrap"><table>
+    <thead><tr><th>Metric</th><th>Value</th><th>Based on</th><th>Pilot target</th></tr></thead>
+    <tbody>
+      <tr><td>Profile completion time (median)</td><td>{% if m.completion.0 is not None %}{{ m.completion.0 }} min{% else %}—{% endif %}</td><td>{{ m.completion.1 }} vendors</td><td>Under 5 minutes</td></tr>
+      <tr><td>Invite conversion</td><td>{% if m.conversion.0 is not None %}{{ m.conversion.0 }}%{% else %}—{% endif %}</td><td>{{ m.conversion.1 }} of {{ m.conversion.2 }} invited</td><td>Over 70%</td></tr>
+      <tr><td>Verification turnaround (median)</td><td>{% if m.turnaround.0 is not None %}{{ m.turnaround.0 }} h{% else %}—{% endif %}</td><td>{{ m.turnaround.1 }} documents</td><td>Under 24 hours</td></tr>
+      <tr><td>Profile reuse</td><td>{{ m.reuse.0 }} vendors</td><td>{{ m.reuse.1 }} in 2+ events</td><td>Tracked from 2nd pilot event</td></tr>
+      <tr><td>Extraction accuracy</td><td>{% if m.accuracy.0 is not None %}{{ m.accuracy.0 }}%{% else %}—{% endif %}</td><td>{{ m.accuracy.1 }} of {{ m.accuracy.2 }} fields unchanged</td><td>Over 85%</td></tr>
+      <tr><td>SMS sent</td><td>{{ m.sms_sent }}</td><td>All time</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+</div>
+<div class="grid-2">
+  <div class="card card-flush">
+    <div class="card-head"><span class="card-label">Green by event day · target over 90%</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Event</th><th class="num">Green</th><th class="num">Joined</th><th class="num">%</th></tr></thead>
+      <tbody>{% for r in m.green %}<tr><td>{{ r.event.name }}<br><span class="muted">{{ r.event.start_date|date:"M j, Y" }}</span></td><td class="num">{{ r.green }}</td><td class="num">{{ r.total }}</td><td class="num">{{ r.pct|default_if_none:"—" }}</td></tr>{% empty %}<tr><td colspan="4" class="empty">No events yet.</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </div>
+  <div class="card card-flush">
+    <div class="card-head"><span class="card-label">Organizer bulk reminders · trending down</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Event</th><th class="num">Reminders</th></tr></thead>
+      <tbody>{% for r in m.reminders %}<tr><td>{{ r.event }}</td><td class="num">{{ r.count }}</td></tr>{% empty %}<tr><td colspan="2" class="empty">None sent yet.</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </div>
+</div>
+{% endblock %}

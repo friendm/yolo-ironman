@@ -1,0 +1,31 @@
+{% extends "app.html" %}{% load ui %}
+{% block title %}Join {{ event.name }}{% endblock %}
+{% block content %}
+<div class="page-head"><div>
+  <span class="card-label">{{ event.organization.name }}</span>
+  <h1>{{ event.name }}</h1>
+  <p>{% if event.is_standing %}Ongoing{% else %}{{ event.start_date|date:"D, M j, Y" }}{% if event.end_date != event.start_date %} – {{ event.end_date|date:"D, M j, Y" }}{% endif %}{% endif %}{% if event.location_name %} · {{ event.location_name }}{% endif %}</p>
+</div></div>
+{% with req=event.requirement %}
+<div class="card">
+  <span class="card-label">What this event requires</span>
+  <ul>
+    {% for t in req.required_document_types.all %}<li>{{ t.label }}</li>{% endfor %}
+    <li>General liability of {{ req.min_gl_per_occurrence|dollars }} per occurrence and {{ req.min_gl_aggregate|dollars }} aggregate</li>
+    {% if req.require_auto %}<li>Auto liability (food trucks)</li>{% endif %}
+    {% if req.require_liquor %}<li>Liquor liability</li>{% endif %}
+  </ul>
+  {% if req.additional_insured_text %}<p class="muted">Additional insured wording: {{ req.additional_insured_text }}</p>{% endif %}
+</div>
+{% endwith %}
+<div class="card">
+  <span class="card-label">Your status for this event</span>
+  <p>{% pill preview.color %}</p>
+  {% if preview.reasons %}<ul class="reasons">{% for r in preview.reasons %}<li>{{ r }}</li>{% endfor %}</ul>
+  <p class="muted">You can still join now and add what's missing after.</p>{% endif %}
+</div>
+<form method="post">{% csrf_token %}
+  <p class="muted">Joining shares your current documents with {{ event.organization.name }}.</p>
+  <button class="btn btn-primary btn-block" type="submit">Join {{ event.name }}</button>
+</form>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "app.html" %}
+{% block title %}{% if event %}Edit {{ event.name }}{% else %}New event{% endif %}{% endblock %}
+{% block content %}
+<div class="page-head"><div>
+  <h1>{% if event %}Edit {{ event.name }}{% elif standing %}New standing vendor list{% else %}New event{% endif %}</h1>
+  <p>{% if standing %}Vendors are checked against today's date instead of an event date.{% else %}Requirements start with the usual defaults. Change anything that doesn't fit.{% endif %}</p>
+</div></div>
+<form method="post" novalidate>{% csrf_token %}
+  {% if standing %}<input type="hidden" name="standing" value="1">{% endif %}
+  <div class="card">
+    <span class="card-label">Event</span>
+    {{ event_form }}
+  </div>
+  <div class="card">
+    <span class="card-label">Requirements</span>
+    {{ req_form }}
+  </div>
+  <div class="actions">
+    <button class="btn btn-primary" type="submit">{% if event %}Save changes{% else %}Create event{% endif %}</button>
+    <a class="btn btn-secondary" href="{% if event %}{% url 'events:org_event' event.id %}{% else %}{% url 'events:org_home' %}{% endif %}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

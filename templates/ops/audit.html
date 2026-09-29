@@ -1,0 +1,26 @@
+{% extends "app.html" %}
+{% block title %}Audit log{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Audit log</h1><p>Every document view, download, and change.</p></div></div>
+<form class="filters card" method="get">
+  {% for field in form %}{{ field.as_field_group }}{% endfor %}
+  <button class="btn btn-secondary" type="submit">Filter</button>
+</form>
+<div class="card card-flush">
+  <div class="table-wrap"><table class="stack-sm">
+    <thead><tr><th>When</th><th>Who</th><th>Action</th><th>Entity</th><th>Details</th></tr></thead>
+    <tbody>
+    {% for log in page %}
+      <tr><td>{{ log.created_at|date:"M j, Y g:i:s a" }}</td><td>{{ log.actor_user|default:"Anonymous" }}</td><td>{{ log.action }}</td><td>{{ log.entity }}<br><span class="muted">{{ log.entity_id|default:"" }}</span></td><td class="muted">{% for k, v in log.details.items %}{{ k }}: {{ v }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</td></tr>
+    {% empty %}
+      <tr><td colspan="5" class="empty">No entries match.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+</div>
+<nav class="pagination" aria-label="Pages">
+  {% if page.has_previous %}<a href="?{{ query }}&page={{ page.previous_page_number }}">Previous</a>{% endif %}
+  <span class="muted">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}<a href="?{{ query }}&page={{ page.next_page_number }}">Next</a>{% endif %}
+</nav>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "app.html" %}
+{% block title %}Delete account{% endblock %}
+{% block content %}
+<div class="card">
+  <span class="card-label">Delete account</span>
+  <h1>Delete your account?</h1>
+  <p>Your documents and profile are removed. Documents you already shared with an organizer for a past event stay in that event's records and exports, as described in our <a href="{% url 'accounts:privacy' %}">privacy policy</a>.</p>
+  <form method="post" novalidate>{% csrf_token %}
+    {{ form }}
+    <button class="btn btn-danger" type="submit">Delete my account</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "public.html" %}{% load ui %}
+{% block title %}{{ vendor.business_name }} documents{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ vendor.business_name }}</h1>
+    <p>{{ vendor.get_vendor_type_display }}{% if vendor.service_area %} · {{ vendor.service_area }}{% endif %}. Read-only link, valid until {{ link.expires_at|date:"M j, Y" }}.</p>
+  </div>
+</div>
+<div class="card card-flush">
+  <div class="table-wrap">
+  <table class="stack-sm">
+    <thead><tr><th>Document</th><th>Status</th><th>Verified</th><th>Expires</th><th><span class="sr-only">Open</span></th></tr></thead>
+    <tbody>
+    {% for doc in documents %}
+      <tr>
+        <td>{{ doc.document_type.label }}</td>
+        <td>{% pill "verified" %}</td>
+        <td>{{ doc.verified_at|date:"M j, Y" }} · {{ doc.get_verification_method_display }}</td>
+        <td>{{ doc.expiration_date|date:"M j, Y"|default:"—" }}</td>
+        <td><a href="{% url 'documents:share_document' link.token doc.id %}">View</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5" class="empty">No verified documents yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+<p class="muted">{% disclaimer %}</p>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "app.html" %}
+{% block title %}Organization{% endblock %}
+{% block content %}
+<div class="page-head"><div>
+  <h1>{% if org %}Organization{% else %}Set up your organization{% endif %}</h1>
+  <p>We email you when a vendor's status changes close to your event.</p>
+</div></div>
+<form class="card" method="post" novalidate>{% csrf_token %}
+  {{ form }}
+  <button class="btn btn-primary" type="submit">Save</button>
+</form>
+{% endblock %}

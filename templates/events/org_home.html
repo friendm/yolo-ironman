@@ -1,0 +1,21 @@
+{% extends "app.html" %}
+{% block title %}Events{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Events</h1><p>Every vendor's insurance and permit status, per event.</p></div>
+  <div class="actions">
+    {% if org.recurring_host %}<a class="btn btn-secondary" href="{% url 'events:event_new' %}?standing=1">New standing list</a>{% endif %}
+    <a class="btn btn-primary" href="{% url 'events:event_new' %}">New event</a>
+  </div>
+</div>
+<div class="card card-flush">
+  <div class="card-head"><span class="card-label">Upcoming</span></div>
+  {% include "events/_event_table.html" with events=upcoming empty="No upcoming events. Create one to get an invite link." %}
+</div>
+{% if past %}
+<div class="card card-flush">
+  <div class="card-head"><span class="card-label">Past</span></div>
+  {% include "events/_event_table.html" with events=past empty="" %}
+</div>
+{% endif %}
+{% endblock %}

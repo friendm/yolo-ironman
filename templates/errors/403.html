@@ -1,0 +1,3 @@
+{% extends "public.html" %}
+{% block title %}No access{% endblock %}
+{% block content %}<div class="narrow card"><h1>You don't have access to this page</h1><a class="btn btn-secondary" href="{% url 'accounts:landing' %}">Go home</a></div>{% endblock %}

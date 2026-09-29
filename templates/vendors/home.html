@@ -1,0 +1,51 @@
+{% extends "app.html" %}{% load ui %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div class="card status-card tone-{{ tone }}">
+  <span class="status-dot" aria-hidden="true"></span>
+  <div>
+    <span class="card-label">Your status</span>
+    <p class="big">{{ headline }}</p>
+  </div>
+</div>
+
+<div class="page-head">
+  <div><h2>Upcoming events</h2></div>
+  <a class="btn btn-secondary" href="{% url 'events:join' %}">Join an event</a>
+</div>
+{% if links %}
+<div class="card card-flush">
+  <div class="table-wrap">
+  <table class="stack-sm">
+    <thead><tr><th>Event</th><th>Dates</th><th>Status</th><th>What's needed</th></tr></thead>
+    <tbody>
+    {% for link in links %}
+      <tr class="row-link">
+        <td><a href="{% url 'events:vendor_event' link.event.id %}">{{ link.event.name }}</a><br><span class="muted">{{ link.event.organization.name }}</span></td>
+        <td>{% if link.event.is_standing %}Ongoing{% else %}{{ link.event.start_date|date:"M j" }}{% if link.event.end_date != link.event.start_date %}–{{ link.event.end_date|date:"M j" }}{% endif %}{% endif %}</td>
+        <td>{% if link.status == "invited" %}{% pill "invited" %}{% else %}{% pill link.computed_status %}{% endif %}</td>
+        <td>{% if link.status == "invited" %}<span class="muted">Tap to review and join</span>{% elif link.status_reasons %}<ul class="reasons">{% for r in link.status_reasons %}<li>{{ r }}</li>{% endfor %}</ul>{% else %}<span class="muted">You're all set</span>{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% else %}
+<div class="card empty">
+  <h3>No events yet</h3>
+  <p>Got an invite code from an organizer? Enter it to join their event.</p>
+  <form class="search" method="get" action="{% url 'events:join' %}">
+    <label class="sr-only" for="home-code">Invite code</label>
+    <input id="home-code" type="text" name="code" placeholder="Invite code" autocapitalize="characters">
+    <button class="btn btn-primary" type="submit">Join</button>
+  </form>
+</div>
+{% endif %}
+
+<div class="page-head">
+  <div><h2>Your documents</h2></div>
+  <a class="btn btn-secondary" href="{% url 'vendors:documents' %}">Manage</a>
+</div>
+{% for card in cards %}{% include "vendors/_doc_card.html" %}{% endfor %}
+{% endblock %}

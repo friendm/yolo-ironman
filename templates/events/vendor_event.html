@@ -1,0 +1,37 @@
+{% extends "app.html" %}{% load ui %}
+{% block title %}{{ event.name }}{% endblock %}
+{% block content %}
+<div class="page-head"><div>
+  <span class="card-label">{{ event.organization.name }}</span>
+  <h1>{{ event.name }}</h1>
+  <p>{% if event.is_standing %}Ongoing{% else %}{{ event.start_date|date:"D, M j, Y" }}{% if event.end_date != event.start_date %} – {{ event.end_date|date:"D, M j, Y" }}{% endif %}{% endif %}{% if event.location_name %} · {{ event.location_name }}{% endif %}{% if event.address %} · {{ event.address }}{% endif %}</p>
+</div></div>
+{% if link.status == "invited" %}
+<div class="card"><span class="card-label">Invitation</span><p>You're invited but haven't joined yet.</p><a class="btn btn-primary" href="{% url 'events:join_code' event.invite_code %}">Review and join</a></div>
+{% else %}
+<div class="card">
+  <span class="card-label">Your status</span>
+  <p>{% pill link.computed_status %}</p>
+  {% if link.status_reasons %}<ul class="reasons">{% for r in link.status_reasons %}<li>{{ r }}</li>{% endfor %}</ul>
+  <p><a class="btn btn-secondary" href="{% url 'vendors:documents' %}">Update documents</a></p>
+  {% else %}<p class="muted">You're all set for this event.</p>{% endif %}
+</div>
+<div class="card">
+  <span class="card-label">Additional insured certificate</span>
+  {% if event.requirement.additional_insured_text %}
+    <p>This event must be named as additional insured, exactly as:</p>
+    <p class="code-box">{{ event.requirement.additional_insured_text }}</p>
+    {% if vendor.agent_email %}
+      <form method="post" action="{% url 'events:ai_request' event.id %}">{% csrf_token %}
+        <button class="btn btn-primary" type="submit">Ask my agent for this certificate</button>
+      </form>
+      <p class="muted">We'll email {{ vendor.agent_email }} the exact wording, the event dates, and a secure upload link.{% if last_request %} Last requested {{ last_request.sent_at|date:"M j, g:i a" }}{% if last_request.status == "received" %}; certificate received{% endif %}.{% endif %}</p>
+    {% else %}
+      <p class="muted"><a href="{% url 'vendors:basics' %}">Add your agent's email</a> to request this in one tap.</p>
+    {% endif %}
+  {% else %}
+    <p class="muted">This event hasn't asked to be named as additional insured.</p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

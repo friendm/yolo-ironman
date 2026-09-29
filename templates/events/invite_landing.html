@@ -1,0 +1,12 @@
+{% extends "public.html" %}
+{% block title %}Join {{ event.name }}{% endblock %}
+{% block content %}
+<div class="narrow card">
+  <span class="card-label">You're invited</span>
+  <h1>{{ event.organization.name }} invited you to {{ event.name }}</h1>
+  <p class="muted">{% if event.start_date %}{{ event.start_date|date:"D, M j, Y" }}{% endif %}{% if event.location_name %} · {{ event.location_name }}{% endif %}</p>
+  <p>Set up your free compliance profile once, then share it with this event in one tap.</p>
+  <a class="btn btn-primary btn-block" href="{% url 'accounts:vendor_start' %}?invite={{ event.invite_code }}">Get started</a>
+  <p class="muted">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a>.</p>
+</div>
+{% endblock %}

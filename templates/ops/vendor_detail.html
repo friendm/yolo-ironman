@@ -1,0 +1,26 @@
+{% extends "app.html" %}{% load ui %}
+{% block title %}{{ vendor.business_name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>{{ vendor.business_name }}</h1><p>{{ vendor.get_vendor_type_display }} · {{ vendor.owner_user.phone|default:"no phone" }}{% if vendor.owner_user.sms_opt_out %} · opted out of SMS{% endif %}</p></div>
+  <a class="btn btn-secondary" href="{% url 'ops:audit' %}?entity_id={{ vendor.id }}">Audit log</a>
+</div>
+<div class="card">
+  <span class="card-label">Agent</span>
+  <dl class="kv"><dt>Contact</dt><dd>{{ vendor.agent_name|default:"—" }}</dd><dt>Email</dt><dd>{{ vendor.agent_email|default:"—" }}</dd><dt>Phone</dt><dd>{{ vendor.agent_phone|default:"—" }}</dd><dt>Insurer</dt><dd>{{ vendor.insurer_name|default:"—" }}</dd></dl>
+</div>
+<div class="card card-flush">
+  <div class="card-head"><span class="card-label">All documents (including history)</span></div>
+  <div class="table-wrap"><table class="stack-sm">
+    <thead><tr><th>Document</th><th>Status</th><th>Uploaded</th><th>Expires</th><th>Current</th></tr></thead>
+    <tbody>{% for d in documents %}<tr class="row-link"><td><a href="{% url 'ops:review' d.id %}">{{ d.document_type.label }}</a></td><td>{% pill d.status %}</td><td>{{ d.created_at|date:"M j, Y" }}</td><td>{{ d.expiration_date|date:"M j, Y"|default:"—" }}</td><td>{% if d.superseded_by_id %}Replaced{% else %}Yes{% endif %}</td></tr>{% empty %}<tr><td colspan="5" class="empty">No documents.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</div>
+<div class="card card-flush">
+  <div class="card-head"><span class="card-label">Events</span></div>
+  <div class="table-wrap"><table class="stack-sm">
+    <thead><tr><th>Event</th><th>Organization</th><th>Participation</th><th>Status</th></tr></thead>
+    <tbody>{% for l in links %}<tr><td>{{ l.event.name }}</td><td>{{ l.event.organization.name }}</td><td>{{ l.get_status_display }}</td><td>{% pill l.computed_status %}</td></tr>{% empty %}<tr><td colspan="4" class="empty">No events.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</div>
+{% endblock %}

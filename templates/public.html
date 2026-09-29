@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="public-header">
+  <a class="logo" href="{% url 'accounts:landing' %}">COI<span>·</span>Network</a>
+  <nav aria-label="Main">
+    {% if user.is_authenticated %}
+      <a href="{% url 'accounts:landing' %}">Dashboard</a>
+    {% else %}
+      <a href="{% url 'accounts:login' %}">Log in</a>
+    {% endif %}
+  </nav>
+</header>
+<main id="main" class="public-main">
+  {% include "includes/messages.html" %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="public-footer">
+  <span>© {% now "Y" %} {{ SITE_NAME }}</span>
+  <a href="{% url 'accounts:terms' %}">Terms</a>
+  <a href="{% url 'accounts:privacy' %}">Privacy</a>
+</footer>
+{% endblock %}

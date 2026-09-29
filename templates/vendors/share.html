@@ -1,0 +1,21 @@
+{% extends "app.html" %}
+{% block title %}Share packet{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Share packet</h1>
+    <p>A read-only link to your verified documents for organizers who aren't on {{ SITE_NAME }} yet. Links work for 14 days.</p>
+  </div>
+  <form method="post">{% csrf_token %}<button class="btn btn-primary" type="submit">Create link</button></form>
+</div>
+{% if not verified %}<div class="notice notice-warning">You have no verified documents yet. The link will show them once they're verified.</div>{% endif %}
+{% for link in links %}
+  <div class="card">
+    <span class="card-label">Expires {{ link.expires_at|date:"M j, Y" }}</span>
+    <div class="code-box"><span>{{ link.url }}</span><button class="btn btn-secondary" type="button" data-copy="{{ link.url }}" hidden>Copy</button></div>
+    <form class="inline-form" method="post" action="{% url 'vendors:revoke_share' link.id %}">{% csrf_token %}<button class="btn-link" type="submit">Turn off this link</button></form>
+  </div>
+{% empty %}
+  <div class="card empty"><h3>No active links</h3><p>Create one to text or email to an organizer.</p></div>
+{% endfor %}
+{% endblock %}
