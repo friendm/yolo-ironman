@@ -1,5 +1,7 @@
 class ContentSecurityPolicyMiddleware:
-    """Strict CSP: no inline scripts or styles anywhere in the app."""
+    """Strict CSP (no inline scripts or styles) plus a Permissions-Policy that turns off unused browser features."""
+
+    PERMISSIONS = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
 
     POLICY = "; ".join(
         [
@@ -22,4 +24,5 @@ class ContentSecurityPolicyMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
         response.setdefault("Content-Security-Policy", self.POLICY)
+        response.setdefault("Permissions-Policy", self.PERMISSIONS)
         return response

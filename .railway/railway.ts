@@ -9,6 +9,7 @@ const BRANCH = "master";
 // so the web service and the worker read the same values and nothing secret is in git.
 const SHARED = [
   "DJANGO_SECRET_KEY",
+  "DJANGO_ADMIN_URL",
   "SITE_URL",
   "DJANGO_ALLOWED_HOSTS",
   "DJANGO_CSRF_TRUSTED_ORIGINS",

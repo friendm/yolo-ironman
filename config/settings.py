@@ -72,7 +72,7 @@ SITE_URL = (
 SITE_NAME = env("SITE_NAME", "COI Network")
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
+    "config.apps.SecureAdminConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -233,7 +233,14 @@ Q_CLUSTER = {
     "sync": env_bool("Q_SYNC", DEBUG),
 }
 
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 30
+# The Django data admin lives at a secret path. In production it is switched off unless DJANGO_ADMIN_URL is set.
+DJANGO_ADMIN_URL = (env("DJANGO_ADMIN_URL") or ("django-admin/" if DEBUG else "")).strip().strip("/")
+if DJANGO_ADMIN_URL:
+    if not all(ch.isalnum() or ch in "-_/" for ch in DJANGO_ADMIN_URL):
+        raise RuntimeError("DJANGO_ADMIN_URL may only contain letters, numbers, '-', '_' and '/'.")
+    DJANGO_ADMIN_URL += "/"
+
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 30  # admin-role sessions are cut to 8 hours at sign-in
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 X_FRAME_OPTIONS = "DENY"
@@ -246,6 +253,9 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = 60 * 60 * 24 * 30
+    # Turn these on only once every subdomain is served over HTTPS.
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
+    SECURE_HSTS_PRELOAD = env_bool("SECURE_HSTS_PRELOAD", False)
 
 LOGGING = {
     "version": 1,

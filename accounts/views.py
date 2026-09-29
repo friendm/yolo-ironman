@@ -12,6 +12,7 @@ from django.views.decorators.http import require_POST
 from common.phone import format_phone
 from common.ratelimit import client_ip, hit
 from notifications import services as notify
+from ops import audit
 
 from .forms import CodeForm, EmailForm, EmailPasswordForm, PhoneForm, RoleForm
 from .models import PhoneCode, User
@@ -107,6 +108,7 @@ def enter_code(request):
                 del request.session["otp_phone"]
                 return finish_login(request, user)
         else:
+            audit.record(None, "login_failed", entity="user", tried=phone, method="sms_code", ip=client_ip(request))
             form.add_error("code", "That code didn't work. Check the text message or request a new code.")
     return render(request, "accounts/code.html", {"form": form, "phone": format_phone(phone)})
 
@@ -154,6 +156,14 @@ def email_login(request):
             user = User.objects.filter(email__iexact=form.cleaned_data["email"], is_active=True).first()
             if user and user.check_password(form.cleaned_data["password"]):
                 return finish_login(request, user)
+            audit.record(
+                None,
+                "login_failed",
+                entity="user",
+                tried=form.cleaned_data["email"],
+                method="email_password",
+                ip=client_ip(request),
+            )
             form.add_error(None, "Email or password is incorrect.")
     return render(request, "accounts/email_login.html", {"form": form})
 

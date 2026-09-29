@@ -3,6 +3,7 @@ import tempfile
 
 os.environ.setdefault("DJANGO_SECRET_KEY", "test-secret-key")
 os.environ["Q_SYNC"] = "1"
+os.environ["DJANGO_ADMIN_URL"] = "test-secret-admin"
 for key in ("TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "EMAIL_HOST", "ANTHROPIC_API_KEY", "S3_BUCKET"):
     os.environ[key] = ""
 

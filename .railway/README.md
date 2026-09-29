@@ -21,6 +21,7 @@ does not read it during deploys.
    | Variable | Value |
    | --- | --- |
    | `DJANGO_SECRET_KEY` | a long random string (required) |
+   | `DJANGO_ADMIN_URL` | a secret path for Django's data admin, e.g. the output of `python -c "import secrets; print(secrets.token_urlsafe(16))"`. Leave unset to switch the data admin off |
    | `SITE_URL` | your public URL, e.g. `https://app.example.com` (required for links in SMS and email) |
    | `DJANGO_ALLOWED_HOSTS` | your custom domain, if any (the Railway domain is allowed automatically) |
    | `DJANGO_CSRF_TRUSTED_ORIGINS` | `https://` + your custom domain, if any |
