@@ -1,0 +1,13 @@
+{% extends "app.html" %}{% load ui %}
+{% block title %}Expirations{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Expiration monitor</h1><p>Current documents expiring in the next 30 days, and already expired.</p></div></div>
+<div class="card card-flush">
+  <div class="card-head"><span class="card-label">Expiring in 30 days</span></div>
+  {% include "ops/_expiry_table.html" with docs=expiring %}
+</div>
+<div class="card card-flush">
+  <div class="card-head"><span class="card-label">Expired</span></div>
+  {% include "ops/_expiry_table.html" with docs=expired %}
+</div>
+{% endblock %}

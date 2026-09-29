@@ -1,0 +1,50 @@
+{% extends "app.html" %}
+{% block title %}Invite vendors · {{ event.name }}{% endblock %}
+{% block content %}
+<div class="page-head"><div>
+  <h1>Invite vendors</h1>
+  <p><a href="{% url 'events:org_event' event.id %}">{{ event.name }}</a></p>
+</div></div>
+<div class="grid-2">
+  <div class="card">
+    <span class="card-label">Invite link</span>
+    <p class="muted">Text or email this link. New vendors sign up and join in one flow.</p>
+    <div class="code-box"><span>{{ event.invite_url }}</span><button class="btn btn-secondary" type="button" data-copy="{{ event.invite_url }}" hidden>Copy</button></div>
+  </div>
+  <div class="card">
+    <span class="card-label">Invite code</span>
+    <p class="muted">Vendors can enter this in the app under "Join an event".</p>
+    <div class="code-box code-big"><span>{{ event.invite_code }}</span><button class="btn btn-secondary" type="button" data-copy="{{ event.invite_code }}" hidden>Copy</button></div>
+  </div>
+</div>
+<div class="card">
+  <span class="card-label">Invite a vendor already on {{ SITE_NAME }}</span>
+  <form class="search" method="get" role="search">
+    <label class="sr-only" for="id_q">Search vendors by business name</label>
+    <input id="id_q" type="search" name="q" value="{{ form.q.value|default:'' }}" placeholder="Business name">
+    <button class="btn btn-secondary" type="submit">Search</button>
+  </form>
+  {% if form.q.value %}
+  <div class="table-wrap">
+  <table>
+    <tbody>
+    {% for vendor in results %}
+      <tr>
+        <td>{{ vendor.business_name }}<br><span class="muted">{{ vendor.get_vendor_type_display }}{% if vendor.service_area %} · {{ vendor.service_area }}{% endif %}</span></td>
+        <td class="num"><form class="inline-form" method="post" action="{% url 'events:org_invite_vendor' event.id %}">{% csrf_token %}<input type="hidden" name="vendor_id" value="{{ vendor.id }}"><button class="btn btn-primary" type="submit">Invite by text</button></form></td>
+      </tr>
+    {% empty %}
+      <tr><td class="empty">No vendors match "{{ form.q.value }}". Send them the invite link instead.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% endif %}
+</div>
+{% if invited %}
+<div class="card">
+  <span class="card-label">Invited, not joined yet</span>
+  <ul>{% for link in invited %}<li>{{ link.vendor.business_name }} <span class="muted">· invited {{ link.created_at|date:"M j" }}</span></li>{% endfor %}</ul>
+</div>
+{% endif %}
+{% endblock %}

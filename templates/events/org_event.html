@@ -1,0 +1,65 @@
+{% extends "app.html" %}{% load ui %}
+{% block title %}{{ event.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ event.name }}</h1>
+    <p>{% if event.is_standing %}Standing list · checked against today{% else %}{{ event.start_date|date:"D, M j, Y" }}{% if event.end_date != event.start_date %} – {{ event.end_date|date:"D, M j, Y" }}{% endif %}{% endif %}{% if event.location_name %} · {{ event.location_name }}{% endif %}</p>
+  </div>
+  <div class="actions">
+    <a class="btn btn-primary" href="{% url 'events:org_invite' event.id %}">Invite vendors</a>
+    <a class="btn btn-secondary" href="{% url 'events:event_edit' event.id %}">Edit</a>
+  </div>
+</div>
+
+<nav class="counts" aria-label="Filter by status">
+  <a class="count" href="?status=green" {% if active == "green" %}aria-current="true"{% endif %}><strong>{{ counts.green }}</strong><span>Ready</span></a>
+  <a class="count" href="?status=yellow" {% if active == "yellow" %}aria-current="true"{% endif %}><strong>{{ counts.yellow }}</strong><span>Pending</span></a>
+  <a class="count" href="?status=red" {% if active == "red" %}aria-current="true"{% endif %}><strong>{{ counts.red }}</strong><span>Action needed</span></a>
+  <a class="count" href="?status=invited" {% if active == "invited" %}aria-current="true"{% endif %}><strong>{{ counts.invited }}</strong><span>Invited, not joined</span></a>
+</nav>
+
+<div class="card card-flush">
+  <div class="card-head page-head">
+    <div><span class="card-label">Vendors{% if active %} · {{ active|pill_label }}{% endif %}</span>{% if active %}<a href="?">Show all</a>{% endif %}</div>
+    <div class="actions">
+      <form class="inline-form" method="post" action="{% url 'events:org_remind' event.id %}">{% csrf_token %}
+        <button class="btn btn-secondary" type="submit" {% if not can_remind %}disabled title="One reminder per event per 24 hours"{% endif %}>Remind all red and yellow vendors</button>
+      </form>
+      <a class="btn btn-secondary" href="{% url 'events:export_csv' event.id %}">Export CSV</a>
+      <a class="btn btn-secondary" href="{% url 'events:export_zip' event.id %}">Download verified documents</a>
+    </div>
+  </div>
+  <div class="table-wrap">
+  <table class="stack-sm">
+    <thead><tr><th>Vendor</th><th>Type</th><th>Status</th><th>Reasons</th><th>Last updated</th></tr></thead>
+    <tbody>
+    {% for link in links %}
+      <tr class="row-link">
+        <td>{% if link.status == "joined" %}<a href="{% url 'events:org_vendor' event.id link.vendor.id %}">{{ link.vendor.business_name }}</a>{% else %}{{ link.vendor.business_name }}{% endif %}</td>
+        <td>{{ link.vendor.get_vendor_type_display }}</td>
+        <td>{% if link.status == "joined" %}{% pill link.computed_status %}{% else %}{% pill "invited" %}{% endif %}</td>
+        <td>{% if link.status != "joined" %}<span class="muted">Hasn't joined yet</span>{% elif link.status_reasons %}<ul class="reasons">{% for r in link.status_reasons %}<li>{{ r }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</td>
+        <td>{{ link.updated_at|date:"M j, g:i a" }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5" class="empty"><h3>No vendors here yet</h3><p>Share the invite link or code so vendors can join.</p><a class="btn btn-primary" href="{% url 'events:org_invite' event.id %}">Invite vendors</a></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% with req=event.requirement %}
+<div class="card">
+  <span class="card-label">Requirements</span>
+  <dl class="kv">
+    <dt>Required documents</dt><dd>{% for t in req.required_document_types.all %}{{ t.label }}{% if not forloop.last %}, {% endif %}{% empty %}None{% endfor %}</dd>
+    <dt>General liability</dt><dd>{{ req.min_gl_per_occurrence|dollars }} per occurrence · {{ req.min_gl_aggregate|dollars }} aggregate</dd>
+    <dt>Auto liability</dt><dd>{% if req.require_auto %}Required for food trucks{% else %}Not required{% endif %}</dd>
+    <dt>Liquor liability</dt><dd>{% if req.require_liquor %}Required{% else %}Not required{% endif %}</dd>
+    <dt>Additional insured</dt><dd>{{ req.additional_insured_text|default:"—"|linebreaksbr }}</dd>
+  </dl>
+</div>
+{% endwith %}
+<p class="muted">{% disclaimer %}</p>
+{% endblock %}

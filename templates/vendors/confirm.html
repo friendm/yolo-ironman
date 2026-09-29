@@ -1,0 +1,20 @@
+{% extends "app.html" %}
+{% block title %}Confirm {{ document.document_type.label }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Confirm your {{ document.document_type.label|lower }}</h1>
+    <p>Check each field against your document and fix anything that's off.</p>
+  </div>
+  <a class="btn btn-secondary" href="{% url 'documents:view' document.id %}" target="_blank" rel="noopener">View upload</a>
+</div>
+{% if read_ok %}
+  {% if low %}<div class="notice notice-warning">We weren't sure about the highlighted fields. Please double-check them.</div>{% endif %}
+{% else %}
+  <div class="notice">We couldn't read this one automatically. Please fill in the details below.</div>
+{% endif %}
+<form class="card" method="post" novalidate>{% csrf_token %}
+  {{ form }}
+  <button class="btn btn-primary btn-block" type="submit">Submit for verification</button>
+</form>
+{% endblock %}

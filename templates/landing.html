@@ -1,0 +1,29 @@
+{% extends "public.html" %}
+{% block title %}Vendor compliance, one tap{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>One verified compliance profile for every event you work.</h1>
+  <p>Food trucks keep their insurance and permits in one place. Organizers see who's ready on one dashboard.</p>
+  <div class="actions">
+    <a class="btn btn-primary" href="{% url 'accounts:vendor_start' %}">I'm a vendor</a>
+    <a class="btn btn-secondary" href="{% url 'accounts:org_start' %}">I organize events</a>
+  </div>
+</section>
+<section class="features">
+  <div class="card">
+    <span class="card-label">Vendors</span>
+    <h2 class="card-title">Upload once, share in one tap</h2>
+    <p class="muted">Snap your COI, health permit, fire inspection, and business license. We read them for you and text you before anything lapses. Always free.</p>
+  </div>
+  <div class="card">
+    <span class="card-label">Organizers</span>
+    <h2 class="card-title">Red, yellow, green for every vendor</h2>
+    <p class="muted">Set your requirements once. See each vendor's status against them, with the reasons in plain words.</p>
+  </div>
+  <div class="card">
+    <span class="card-label">Verified</span>
+    <h2 class="card-title">Checked by a person</h2>
+    <p class="muted">Our team confirms each document with the agent or issuer before it shows as verified.</p>
+  </div>
+</section>
+{% endblock %}

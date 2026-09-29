@@ -1,0 +1,14 @@
+{% extends "public.html" %}
+{% block title %}Enter your code{% endblock %}
+{% block content %}
+<div class="narrow card">
+  <span class="card-label">Check your texts</span>
+  <h1>Enter the 6-digit code</h1>
+  <p class="muted">We sent it to {{ phone }}. It expires in 10 minutes.</p>
+  <form method="post" novalidate>{% csrf_token %}
+    {{ form }}
+    <button class="btn btn-primary btn-block" type="submit">Continue</button>
+  </form>
+  <p class="muted"><a href="{% url 'accounts:login' %}">Use a different number or send a new code</a></p>
+</div>
+{% endblock %}

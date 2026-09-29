@@ -1,0 +1,16 @@
+<div class="table-wrap">
+<table class="stack-sm">
+  <thead><tr><th>Event</th><th>Dates</th><th class="num">Ready</th><th class="num">Pending</th><th class="num">Action needed</th><th class="num">Invited</th></tr></thead>
+  <tbody>
+  {% for e in events %}
+    <tr class="row-link">
+      <td><a href="{% url 'events:org_event' e.id %}">{{ e.name }}</a>{% if e.status == "draft" %} <span class="muted">(draft)</span>{% endif %}</td>
+      <td>{% if e.is_standing %}Standing list{% else %}{{ e.start_date|date:"M j, Y" }}{% if e.end_date != e.start_date %} – {{ e.end_date|date:"M j" }}{% endif %}{% endif %}</td>
+      <td class="num">{{ e.green }}</td><td class="num">{{ e.yellow }}</td><td class="num">{{ e.red }}</td><td class="num">{{ e.invited }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="6" class="empty">{{ empty }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>

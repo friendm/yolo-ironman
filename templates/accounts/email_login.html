@@ -1,0 +1,13 @@
+{% extends "public.html" %}
+{% block title %}Log in with email{% endblock %}
+{% block content %}
+<div class="narrow card">
+  <span class="card-label">Organizers</span>
+  <h1>Log in with email</h1>
+  <form method="post" novalidate>{% csrf_token %}
+    {{ form }}
+    <button class="btn btn-primary btn-block" type="submit">Log in</button>
+  </form>
+  <p class="muted">No password? <a href="{% url 'accounts:org_start' %}">Get a sign-in link</a>.</p>
+</div>
+{% endblock %}

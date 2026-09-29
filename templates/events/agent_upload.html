@@ -1,0 +1,20 @@
+{% extends "public.html" %}
+{% block title %}Upload certificate{% endblock %}
+{% block content %}
+<div class="narrow card">
+  <span class="card-label">Certificate request</span>
+  {% if done %}
+    <h1>Thank you</h1>
+    <p>We received the certificate for {{ req.vendor.business_name }}. Our team will verify it shortly.</p>
+  {% else %}
+    <h1>{{ req.vendor.business_name }} · {{ req.event.name }}</h1>
+    <p class="muted">Please upload a certificate of insurance naming the following as additional insured, exactly as written:</p>
+    <p class="code-box">{{ req.wording }}</p>
+    <form method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
+      {{ form }}
+      <button class="btn btn-primary btn-block" type="submit">Upload certificate</button>
+    </form>
+    <p class="muted">No account needed. PDF, JPG, PNG, or HEIC up to 15 MB.</p>
+  {% endif %}
+</div>
+{% endblock %}

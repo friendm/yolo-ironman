@@ -1,0 +1,12 @@
+{% extends "app.html" %}
+{% block title %}Documents{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Documents</h1>
+    <p>Take a photo or upload a PDF. We'll read it and you confirm the details.</p>
+  </div>
+</div>
+{% for card in cards %}{% include "vendors/_doc_card.html" %}{% endfor %}
+<p class="muted">Uploading a new version replaces the old one. We keep the old file for your history.</p>
+{% endblock %}

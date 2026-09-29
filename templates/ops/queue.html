@@ -1,0 +1,26 @@
+{% extends "app.html" %}{% load ui %}
+{% block title %}Verification queue{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Verification queue</h1><p>{{ documents|length }} pending, soonest event first, then oldest upload.</p></div></div>
+<div class="card card-flush">
+  <div class="table-wrap">
+  <table class="stack-sm">
+    <thead><tr><th>Vendor</th><th>Document</th><th>Source</th><th>Next event</th><th>Submitted</th><th>Reading</th></tr></thead>
+    <tbody>
+    {% for doc in documents %}
+      <tr class="row-link">
+        <td><a href="{% url 'ops:review' doc.id %}">{{ doc.vendor.business_name }}</a></td>
+        <td>{{ doc.document_type.label }}</td>
+        <td>{{ doc.get_source_display }}{% if doc.event %}<br><span class="muted">for {{ doc.event.name }}</span>{% endif %}</td>
+        <td>{{ doc.soonest_event|date:"M j, Y"|default:"—" }}</td>
+        <td>{{ doc.submitted_at|date:"M j, g:i a" }}</td>
+        <td>{{ doc.get_extraction_status_display }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6" class="empty"><h3>Queue is clear</h3><p>New uploads show up here.</p></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% endblock %}

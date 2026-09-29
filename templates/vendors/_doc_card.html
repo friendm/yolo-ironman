@@ -1,0 +1,27 @@
+{% load ui %}<div class="card doc-card">
+  {% if card.doc and card.doc.thumbnail_path %}
+    <img class="doc-thumb" src="{% url 'documents:thumbnail' card.doc.id %}" alt="">
+  {% else %}
+    <span class="doc-thumb" aria-hidden="true">{% if card.doc %}PDF{% else %}—{% endif %}</span>
+  {% endif %}
+  <div>
+    <h3>{{ card.type.label }} {% pill card.pill %}</h3>
+    <p>
+      {% if card.doc %}
+        {% if card.doc.expiration_date %}Expires {{ card.doc.expiration_date|date:"M j, Y" }}{% if card.days_left is not None and card.days_left >= 0 %} · {{ card.days_left }} day{{ card.days_left|pluralize }} left{% endif %}{% endif %}
+        {% if card.doc.status == "rejected" and card.doc.rejection_reason %}<br>Not accepted: {{ card.doc.rejection_reason }}{% endif %}
+        {% if card.doc.status == "verified" %}<br>Verified {{ card.doc.verified_at|date:"M j, Y" }}{% endif %}
+      {% elif card.draft %}Uploaded but not submitted yet.
+      {% else %}Not uploaded yet.{% endif %}
+    </p>
+  </div>
+  <div class="doc-action">
+    {% if card.draft and not card.doc %}
+      <a class="btn btn-primary" href="{% url 'vendors:confirm' card.draft.id %}">Finish</a>
+    {% elif card.doc %}
+      <a class="btn btn-secondary" href="{% url 'vendors:upload' card.type.key %}">Replace</a>
+    {% else %}
+      <a class="btn btn-primary" href="{% url 'vendors:upload' card.type.key %}">Add</a>
+    {% endif %}
+  </div>
+</div>

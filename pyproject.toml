@@ -1,0 +1,25 @@
+[project]
+name = "coi-network"
+version = "0.1.0"
+requires-python = ">=3.11"
+
+[tool.black]
+line-length = 120
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "DJ"]
+ignore = ["DJ001", "B008"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.test_settings"
+python_files = ["test_*.py"]
+testpaths = ["tests"]
+addopts = "-p no:cacheprovider -m 'not e2e'"
+markers = ["e2e: Playwright browser smoke tests (run with -m e2e)"]
+filterwarnings = ["ignore::DeprecationWarning:django_q.*", "ignore:No directory at:UserWarning"]

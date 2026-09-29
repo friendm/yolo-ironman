@@ -1,0 +1,10 @@
+{% extends "public.html" %}
+{% block title %}Check your email{% endblock %}
+{% block content %}
+<div class="narrow card">
+  <span class="card-label">Almost there</span>
+  <h1>Check your email</h1>
+  <p class="muted">If {{ email }} can sign in, a link is on its way. It works once and expires in 15 minutes.</p>
+  <a class="btn btn-secondary" href="{% url 'accounts:org_start' %}">Back</a>
+</div>
+{% endblock %}

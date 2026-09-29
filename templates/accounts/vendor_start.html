@@ -1,0 +1,15 @@
+{% extends "public.html" %}
+{% block title %}Vendor sign up{% endblock %}
+{% block content %}
+<div class="narrow card">
+  <span class="card-label">Vendors</span>
+  <h1>Get started with your phone</h1>
+  <p class="muted">We'll text you a 6-digit code. No passwords.</p>
+  {% if request.session.invite_code %}<div class="notice">You'll join the event for invite code <strong>{{ request.session.invite_code }}</strong> once you're set up.</div>{% endif %}
+  <form method="post" novalidate>{% csrf_token %}
+    {{ form }}
+    <button class="btn btn-primary btn-block" type="submit">Text me a code</button>
+  </form>
+  <p class="muted">By continuing you agree to the <a href="{% url 'accounts:terms' %}">terms</a> and <a href="{% url 'accounts:privacy' %}">privacy policy</a>. Message and data rates may apply. Reply STOP to opt out.</p>
+</div>
+{% endblock %}

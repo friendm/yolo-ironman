@@ -1,0 +1,16 @@
+{% extends "app.html" %}
+{% block title %}Upload {{ dtype.label }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ dtype.label }}</h1>
+    <p>Take a clear photo in good light, or upload a PDF. Max 15 MB.</p>
+  </div>
+</div>
+{% if current %}<div class="notice">This replaces your current {{ dtype.label|lower }}{% if current.expiration_date %} (expires {{ current.expiration_date|date:"M j, Y" }}){% endif %}.</div>{% endif %}
+<form class="card" method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
+  {{ form }}
+  <button class="btn btn-primary btn-block" type="submit">Upload</button>
+</form>
+<a href="{% url 'vendors:documents' %}">Back to documents</a>
+{% endblock %}

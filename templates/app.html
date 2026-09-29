@@ -1,0 +1,46 @@
+{% extends "base.html" %}{% load ui %}
+{% block body %}
+<div class="shell">
+  <aside class="sidebar">
+    <a class="logo" href="{% url 'accounts:landing' %}">COI<span>·</span>Network</a>
+    <nav class="nav" aria-label="Main">
+      {% if user.role == "vendor" %}
+        <a href="{% url 'vendors:home' %}" {% nav_current 'vendors:home' %}>Home</a>
+        <a href="{% url 'vendors:documents' %}" {% nav_current 'vendors:documents' %}>Documents</a>
+        <a href="{% url 'events:join' %}" {% nav_current 'events:join' %}>Join an event</a>
+        <a href="{% url 'vendors:share' %}" {% nav_current 'vendors:share' %}>Share packet</a>
+        <a href="{% url 'vendors:basics' %}" {% nav_current 'vendors:basics' %}>Business details</a>
+      {% elif user.role == "organizer" %}
+        <a href="{% url 'events:org_home' %}" {% nav_current 'events:org_home' %}>Events</a>
+        <a href="{% url 'events:event_new' %}" {% nav_current 'events:event_new' %}>New event</a>
+        <a href="{% url 'events:org_setup' %}" {% nav_current 'events:org_setup' %}>Organization</a>
+      {% elif user.role == "admin" %}
+        <a href="{% url 'ops:queue' %}" {% nav_current 'ops:queue' %}>Verification queue</a>
+        <a href="{% url 'ops:expirations' %}" {% nav_current 'ops:expirations' %}>Expirations</a>
+        <a href="{% url 'ops:directory' %}" {% nav_current 'ops:directory' %}>Directory</a>
+        <a href="{% url 'ops:document_types' %}" {% nav_current 'ops:document_types' %}>Document types</a>
+        <a href="{% url 'ops:templates' %}" {% nav_current 'ops:templates' %}>Requirement templates</a>
+        <a href="{% url 'ops:audit' %}" {% nav_current 'ops:audit' %}>Audit log</a>
+        <a href="{% url 'ops:metrics' %}" {% nav_current 'ops:metrics' %}>Metrics</a>
+      {% endif %}
+    </nav>
+    <div class="nav-foot">
+      <form class="inline-form" method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="btn-link" type="submit">Log out</button></form>
+    </div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title">
+        {% if user.role == "organizer" %}{{ user.organization.name|default:"Set up your organization" }}
+        {% elif user.role == "vendor" %}{{ user.vendor.business_name|default:"Your business" }}
+        {% elif user.role == "admin" %}Operations{% endif %}
+      </span>
+      <span class="muted hide-sm">{{ user.full_name|default:user.phone|default:user.email }}</span>
+    </div>
+    <main id="main" class="content">
+      {% include "includes/messages.html" %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% endblock %}
