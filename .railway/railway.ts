@@ -23,6 +23,7 @@ const SHARED = [
   "DEFAULT_FROM_EMAIL",
   "ADMIN_DIGEST_EMAILS",
   "ANTHROPIC_API_KEY",
+  "SENTRY_DSN",
 ] as const;
 
 export default defineRailway((ctx) => {

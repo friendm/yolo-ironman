@@ -5,7 +5,7 @@ held during quiet hours (9 p.m. to 8 a.m. Eastern), then sent by the hourly job.
 """
 
 import logging
-from datetime import datetime, time, timedelta
+from datetime import time
 from zoneinfo import ZoneInfo
 
 from django.conf import settings
@@ -24,12 +24,6 @@ QUIET_END = time(8, 0)
 def in_quiet_hours(now=None):
     local = (now or timezone.now()).astimezone(EASTERN).time()
     return local >= QUIET_START or local < QUIET_END
-
-
-def next_send_time(now=None):
-    local = (now or timezone.now()).astimezone(EASTERN)
-    day = local.date() if local.time() < QUIET_END else local.date() + timedelta(days=1)
-    return datetime.combine(day, QUIET_END, tzinfo=EASTERN)
 
 
 def _twilio_send(to, body):

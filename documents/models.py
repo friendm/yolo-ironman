@@ -58,10 +58,6 @@ class DocumentQuerySet(models.QuerySet):
         return self.none()
 
 
-def upload_path(document, filename):
-    return f"documents/{document.vendor_id}/{document.id}/{filename}"
-
-
 class Document(TimeStampedModel):
     class Status(models.TextChoices):
         DRAFT = "draft", "Draft"  # uploaded, waiting for the vendor to confirm fields

@@ -57,18 +57,6 @@ class User(TimeStampedModel, AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.full_name or self.phone or self.email or str(self.id)
 
-    @property
-    def is_vendor(self):
-        return self.role == self.Role.VENDOR
-
-    @property
-    def is_organizer(self):
-        return self.role == self.Role.ORGANIZER
-
-    @property
-    def is_admin_role(self):
-        return self.role == self.Role.ADMIN
-
 
 def hash_code(phone, code):
     key = settings.SECRET_KEY.encode()

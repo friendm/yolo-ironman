@@ -1,45 +1,25 @@
+# Python
+__pycache__/
 *.py[cod]
-
-# C extensions
-*.so
-
-# Packages
-*.egg
-*.egg-info
-dist
-build
-eggs
-parts
-bin
-var
-sdist
-develop-eggs
-.installed.cfg
-lib
-lib64
-
-# Installer logs
-pip-log.txt
-
-# Unit test / coverage reports
-.coverage
-.tox
-nosetests.xml
-
-# Translations
-*.mo
-
-# Mr Developer
-.mr.developer.cfg
-.project
-.pydevproject
-
-# Local
-.env
 .venv/
-private_media/
-staticfiles/
+*.egg-info/
+
+# Tooling caches
 .pytest_cache/
 .ruff_cache/
+.coverage
 test-results/
+
+# Local configuration and data (never commit secrets or uploads)
+.env
+private_media/
+staticfiles/
+*.sqlite3
+
+# Railway IaC tooling
 .railway/node_modules/
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
