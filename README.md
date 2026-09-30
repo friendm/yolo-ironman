@@ -105,6 +105,10 @@ email link.
 - **Headers.** Strict Content Security Policy, `Permissions-Policy` disabling camera, microphone, location, and
   payment APIs, HSTS, `nosniff`, `same-origin` referrer, and no framing. Set `SECURE_HSTS_INCLUDE_SUBDOMAINS`
   and `SECURE_HSTS_PRELOAD` once every subdomain is HTTPS-only.
+- **Error reporting.** Set `SENTRY_DSN` to send errors from the web service and the worker (including failed
+  background tasks) to Sentry. It is server-side only, so no third-party script reaches the browser, and events
+  carry no personal data: no request bodies, cookies, IP addresses, or stack-frame variables, and log lines
+  that could contain phone numbers or login codes are dropped.
 - **Access control and files.** Object-level permission checks in every view and query, private storage behind
   10-minute signed URLs, an audit row for every document view and download, and rate limits on login codes,
   invite codes, share links, and agent uploads.

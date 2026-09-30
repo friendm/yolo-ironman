@@ -257,6 +257,20 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
     SECURE_HSTS_PRELOAD = env_bool("SECURE_HSTS_PRELOAD", False)
 
+# Error reporting: set SENTRY_DSN to turn it on (web service and worker).
+SENTRY_DSN = env("SENTRY_DSN")
+if SENTRY_DSN:
+    from config import sentry
+
+    sentry.init(
+        SENTRY_DSN,
+        environment=env("SENTRY_ENVIRONMENT")
+        or env("RAILWAY_ENVIRONMENT_NAME")
+        or ("development" if DEBUG else "production"),
+        release=env("RAILWAY_GIT_COMMIT_SHA"),
+        traces_sample_rate=float(env("SENTRY_TRACES_SAMPLE_RATE", "0")),
+    )
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

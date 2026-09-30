@@ -29,6 +29,7 @@ does not read it during deploys.
    | `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL` | Postmark or Resend SMTP |
    | `ADMIN_DIGEST_EMAILS` | comma-separated admin emails for the hourly digest |
    | `ANTHROPIC_API_KEY` | for document reading |
+   | `SENTRY_DSN` | your Sentry project's DSN, to get error alerts from the web service and the worker (optional) |
 
    Database and bucket credentials are wired automatically.
 
