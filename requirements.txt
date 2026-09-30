@@ -10,5 +10,5 @@ django-q2>=1.7
 whitenoise>=6.7
 pydantic>=2.8
 pypdf>=5
-gunicorn>=23
+gunicorn>=26.2.0
 sentry-sdk[django]>=2.20
