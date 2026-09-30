@@ -30,8 +30,9 @@ python manage.py runserver
 ```
 
 Without Twilio credentials, SMS (including login codes) are printed to the server log. Without an email host,
-email goes to the console. Without `ANTHROPIC_API_KEY`, extraction is skipped and vendors fill in an empty
-form. Without `S3_BUCKET`, files are stored under `private_media/` and served through signed links that
+email goes to the console. Without `ANTHROPIC_API_KEY`, Claude extraction is skipped and vendors fill in an
+empty form. Fillable COI PDFs (ACORD 25 from agency software) are read from their form fields for free, with or
+without a key; photos, scans, and flat PDFs go to Claude. Without `S3_BUCKET`, files are stored under `private_media/` and served through signed links that
 expire in 10 minutes.
 
 Demo logins after `seed_demo`:
@@ -66,6 +67,10 @@ ruff check . && black --check .
 
 If Playwright's bundled Chromium isn't installed, point it at another build with
 `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chrome`.
+
+GitHub Actions (`.github/workflows/ci.yml`) runs lint, the migration check, both test suites against
+Postgres 16, and the `.railway` type-check on every pull request and push to `master`. Dependabot opens weekly
+update pull requests for Python packages, the Railway SDK, and the workflow actions.
 
 ## Deploy (Railway)
 
