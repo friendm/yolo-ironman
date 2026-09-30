@@ -24,9 +24,12 @@ def load_settings(**env):
     clean.update({"DJANGO_SECRET_KEY": "x", "DJANGO_DEBUG": "0", **env})
     code = (
         "import json, config.settings as s; print(json.dumps({'hosts': s.ALLOWED_HOSTS, "
-        "'csrf': s.CSRF_TRUSTED_ORIGINS, 'site': s.SITE_URL, 'exempt': s.SECURE_REDIRECT_EXEMPT}))"
+        "'csrf': s.CSRF_TRUSTED_ORIGINS, 'site': s.SITE_URL, 'exempt': s.SECURE_REDIRECT_EXEMPT, "
+        "'admin': s.DJANGO_ADMIN_URL}))"
     )
-    out = subprocess.run([sys.executable, "-c", code], cwd=ROOT, env=clean, capture_output=True, text=True, check=True)
+    out = subprocess.run([sys.executable, "-c", code], cwd=ROOT, env=clean, capture_output=True, text=True)
+    if out.returncode:
+        raise RuntimeError(out.stderr.strip().splitlines()[-1])
     return json.loads(out.stdout)
 
 

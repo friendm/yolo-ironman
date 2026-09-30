@@ -88,6 +88,22 @@ email link.
 | `notifications` | SMS/email sending and logging, quiet hours, opt-out webhook, scheduled jobs |
 | `common` | Base model (uuid id, timestamps), CSP middleware, rate limiting, upload validation, template tags |
 
+## Security
+
+- **Data admin at a secret path.** Django's built-in admin (for raw data fixes) is only mounted at
+  `DJANGO_ADMIN_URL`. In production it is switched off when that variable is unset, and
+  `manage.py check --deploy` warns if the path is easy to guess. Only active admin-role staff can use it, and
+  its sign-in is limited to 5 attempts per IP per 15 minutes. Day-to-day admin work happens in `/ops`.
+- **Sign-in audit.** Every login, logout, and failed attempt (password or SMS code) is written to the audit
+  log with the IP address.
+- **Short admin sessions.** Admin-role sessions expire after 8 hours; others after 30 days.
+- **Headers.** Strict Content Security Policy, `Permissions-Policy` disabling camera, microphone, location, and
+  payment APIs, HSTS, `nosniff`, `same-origin` referrer, and no framing. Set `SECURE_HSTS_INCLUDE_SUBDOMAINS`
+  and `SECURE_HSTS_PRELOAD` once every subdomain is HTTPS-only.
+- **Access control and files.** Object-level permission checks in every view and query, private storage behind
+  10-minute signed URLs, an audit row for every document view and download, and rate limits on login codes,
+  invite codes, share links, and agent uploads.
+
 ## Notes on the spec
 
 - The vertical stays generic in code: vendor types, document types, and requirement templates are data.
