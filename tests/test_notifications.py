@@ -116,3 +116,14 @@ def test_setup_schedules_command():
     assert set(Schedule.objects.values_list("name", flat=True)) == {"daily-7am-eastern", "hourly"}
     daily = Schedule.objects.get(name="daily-7am-eastern")
     assert daily.next_run.astimezone(EASTERN).hour == 7
+
+
+@pytest.mark.parametrize("start", [datetime(2026, 10, 30, 7, 0), datetime(2027, 3, 12, 7, 0)])
+def test_daily_job_stays_at_7am_eastern_across_daylight_saving_changes(start):
+    from django_q.models import Schedule
+
+    schedule = Schedule(name="t", func="notifications.jobs.daily", schedule_type=Schedule.DAILY)
+    run = start.replace(tzinfo=EASTERN)
+    for _ in range(5):  # crosses Nov 1, 2026 (clocks back) and Mar 14, 2027 (clocks forward)
+        run = schedule.calculate_next_run(run)
+        assert run.astimezone(EASTERN).hour == 7

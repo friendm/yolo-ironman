@@ -166,6 +166,8 @@ def run_extraction(document):
     """Fill document.extracted. Never raises: failures leave an empty form."""
     from .models import Document
 
+    if _read_pdf_form(document):
+        return document
     document.extraction_prompt_version = PROMPT_VERSION
     if not settings.ANTHROPIC_API_KEY:
         document.extraction_status = Document.Extraction.SKIPPED
@@ -191,6 +193,30 @@ def run_extraction(document):
         document.extracted = parsed
     document.save()
     return document
+
+
+def _read_pdf_form(document):
+    """Fillable COI PDFs carry their values as form fields: read those for free instead of calling Claude."""
+    from . import pdf_forms
+    from .models import Document
+
+    if document.document_type.key != "coi" or document.content_type != "application/pdf":
+        return False
+    try:
+        with default_storage.open(document.file_path, "rb") as fh:
+            fields = pdf_forms.extract_coi(fh.read())
+    except Exception:
+        log.exception("Reading PDF form fields failed for %s", document.id)
+        return False
+    if not fields:
+        return False
+    document.extracted = fields
+    document.extraction_status = Document.Extraction.DONE
+    document.extraction_model = pdf_forms.SOURCE
+    document.extraction_prompt_version = pdf_forms.VERSION
+    document.extraction_raw = ""
+    document.save()
+    return True
 
 
 def low_confidence_fields(extracted):
